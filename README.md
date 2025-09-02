@@ -5,6 +5,8 @@
 
 A plugin to track your recent runs on a map in separate categories.
 
+NOTE: It is against the game's terms of service to account share. This plugin is only for your own personal use. If you wish to play with friends, use the official HotSeat game mode.
+
 Some logic has been borrowed from [Run History](https://openplanet.dev/plugin/runhistory).
 
 <!-- ![Signed](https://img.shields.io/badge/Signed-Yes-00AA00) -->
