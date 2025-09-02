@@ -245,12 +245,12 @@ class Player {
     }
 }
 
-void AddPlayer(const string&in name) {
+void AddPlayer(const string&in name, const bool fromFile = false) {
     players.InsertLast(Player(name));
-}
 
-void AddPlayer(Json::Value@ json) {
-    players.InsertLast(Player(json));
+    if (!fromFile) {
+        File::Save();
+    }
 }
 
 void ClearPlayers() {

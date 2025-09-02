@@ -5,6 +5,8 @@ namespace File {
     const string file = IO::FromStorageFolder("data.json");
 
     void Load() {
+        trace("loading file");
+
         Json::Value@ json;
 
         try {
@@ -23,7 +25,7 @@ namespace File {
 
         for (uint i = 0; i < json.Length; i++) {
             try {
-                AddPlayer(string(json[i]));
+                AddPlayer(string(json[i]), true);
             } catch {
                 error("error adding player from file: " + getExceptionInfo());
             }
@@ -31,6 +33,8 @@ namespace File {
     }
 
     void Save() {
+        trace("saving file");
+
         Json::Value@ json = Json::Array();
 
         for (uint i = 0; i < players.Length; i++) {

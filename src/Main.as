@@ -10,6 +10,8 @@ string     newName;
 const vec4 rowBgColor = vec4(vec3(), 0.5f);
 
 void Main() {
+    File::Load();
+
     bool inMap    = InMap();
     bool wasInMap = inMap;
 
@@ -30,9 +32,9 @@ void Main() {
             wasInMap = inMap;
 
             if (inMap) {
-                print("enter map");
+                // print("enter map");
             } else {
-                print("exit map");
+                // print("exit map");
                 ClearPlayerTimes();
             }
         }
@@ -158,6 +160,7 @@ void RenderWindow() {
 
         if (removeAt != -1) {
             players.RemoveAt(removeAt);
+            File::Save();
 
             if (true
                 and index > 0
