@@ -1,0 +1,9 @@
+[meta]
+name = "ColdSeat"
+author = "Ezio"
+category = "Developer"
+version = "0.1.0"
+
+[script]
+dependencies = [ "MLFeedRaceData" ]
+optional_dependencies = [ "ChampionMedals", "WarriorMedals" ]
