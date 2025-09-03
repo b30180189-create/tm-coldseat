@@ -1,5 +1,5 @@
 // c 2025-09-02
-// m 2025-09-02
+// m 2025-09-03
 
 const string  pluginColor = "\\$8DF";
 const string  pluginIcon  = Icons::SnowflakeO;
@@ -17,8 +17,18 @@ void Main() {
 
     bool newRun = false;
 
+    Mode lastMode = S_Mode;
+
     while (true) {
         yield();
+
+        if (lastMode != S_Mode) {
+            lastMode = S_Mode;
+            if (lastMode == Mode::Limited) {
+                ClearPlayerTimes();
+                index = 0;
+            }
+        }
 
         if (!S_Enabled) {
             inMap = false;
@@ -36,6 +46,10 @@ void Main() {
             } else {
                 // print("exit map");
                 ClearPlayerTimes();
+
+                if (inLimitedRun) {
+                    StopLimitedRun();
+                }
             }
         }
 
@@ -95,8 +109,22 @@ void OnFinishedRun(const int time) {
     if (false
         or time <= 0
         or players.Length == 0
+        or (true
+            and S_Mode == Mode::Limited
+            and !inLimitedRun
+        )
     ) {
         return;
+    }
+
+    if (inLimitedRun) {
+        if (index == players.Length - 1) {
+            roundsLeft--;
+        }
+
+        if (roundsLeft == 0) {
+            StopLimitedRun(true);
+        }
     }
 
     players[index].AddTime(time);
@@ -106,40 +134,54 @@ void OnFinishedRun(const int time) {
 void RenderWindow() {
     const float scale = UI::GetScale();
 
-    UI::SetNextItemWidth((UI::GetContentRegionAvail().x - 15.0f) / scale - scale * 25.0f);
-    bool changed;
-    newName = UI::InputText("##new", newName, changed, UI::InputTextFlags::EnterReturnsTrue);
+    switch (S_Mode) {
+        case Mode::Forever:
+            UI::BeginDisabled(players.Length < 2);
 
-    UI::SameLine();
-    UI::BeginDisabled(newName.Length == 0);
-    if (false
-        or UI::Button(Icons::Plus)
-        or changed
-    ) {
-        AddPlayer(newName);
-        newName = "";
+            if (UI::Button(Icons::ArrowLeft + " Previous")) {
+                Decrement();
+            }
+
+            UI::SameLine();
+            if (UI::Button(Icons::ArrowRight + " Next")) {
+                Increment();
+            }
+
+            UI::EndDisabled();
+
+            break;
+
+        case Mode::Limited:
+            if (!inLimitedRun) {
+                UI::BeginDisabled(!InMap());
+                if (UI::Button(Icons::Play + " Start Run")) {
+                    StartLimitedRun();
+                }
+                UI::EndDisabled();
+
+                UI::SameLine();
+                UI::SetNextItemWidth(scale * 120.0f);
+                S_Rounds = Math::Clamp(UI::InputInt("Round" + (S_Rounds == 1 ? "" : "s") + "###rounds", S_Rounds), 1, 10000);
+
+            } else {
+                if (UI::Button(Icons::Stop + " End Run")) {
+                    StopLimitedRun();
+                }
+
+                UI::SameLine();
+                UI::TextDisabled("(" + roundsLeft + " Round" + (roundsLeft == 1 ? "" : "s") + " Left)");
+            }
+
+            break;
     }
-    UI::EndDisabled();
-    UI::SetItemTooltip("Add New Player");
 
-    UI::BeginDisabled(players.Length < 2);
+    UI::BeginChild("##child-table-players", UI::GetContentRegionAvail() - vec2(0.0f, scale * 60.0f));
 
-    if (UI::Button(Icons::ArrowLeft + " Previous")) {
-        Decrement();
-    }
-
-    UI::SameLine();
-    if (UI::Button(Icons::ArrowRight + " Next")) {
-        Increment();
-    }
-
-    UI::EndDisabled();
-
-    if (UI::BeginTable("##table-players", 6, UI::TableFlags::RowBg | UI::TableFlags::ScrollY)) {
+    if (UI::BeginTable("##table-players", 5, UI::TableFlags::RowBg | UI::TableFlags::ScrollY)) {
         UI::PushStyleColor(UI::Col::TableRowBgAlt, rowBgColor);
 
         UI::TableSetupScrollFreeze(0, 1);
-        UI::TableSetupColumn("#",       UI::TableColumnFlags::WidthFixed, scale * 30.0f);
+        // UI::TableSetupColumn("#",       UI::TableColumnFlags::WidthFixed, scale * 30.0f);
         UI::TableSetupColumn("name");
         UI::TableSetupColumn("last",    UI::TableColumnFlags::WidthFixed, scale * 80.0f);
         UI::TableSetupColumn("best",    UI::TableColumnFlags::WidthFixed, scale * 80.0f);
@@ -173,4 +215,27 @@ void RenderWindow() {
         UI::PopStyleColor();
         UI::EndTable();
     }
+
+    UI::EndChild();
+
+    UI::SeparatorText("Add New Player");
+
+    UI::BeginDisabled(inLimitedRun);
+
+    UI::SetNextItemWidth((UI::GetContentRegionAvail().x - 15.0f) / scale - scale * 25.0f);
+    bool changed;
+    newName = UI::InputText("##new", newName, changed, UI::InputTextFlags::EnterReturnsTrue);
+
+    UI::SameLine();
+    UI::BeginDisabled(newName.Length == 0);
+    if (false
+        or UI::Button(Icons::Plus)
+        or changed
+    ) {
+        AddPlayer(newName);
+        newName = "";
+    }
+    UI::EndDisabled();
+
+    UI::EndDisabled();
 }

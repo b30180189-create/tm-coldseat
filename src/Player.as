@@ -1,5 +1,5 @@
 // c 2025-09-02
-// m 2025-09-02
+// m 2025-09-03
 
 Player@      bestAverage;
 Player@      bestBest;
@@ -45,6 +45,18 @@ class Player {
             or average < bestAverage.average
         ) {
             @bestAverage = this;
+
+        } else if (this is bestAverage) {
+            @bestAverage = null;
+
+            for (uint i = 0; i < players.Length; i++) {
+                if (false
+                    or bestAverage is null
+                    or players[i].average < bestAverage.average
+                ) {
+                    @bestAverage = players[i];
+                }
+            }
         }
 
         if (false
@@ -59,6 +71,7 @@ class Player {
             or last < bestLast.last
         ) {
             @bestLast = this;
+
         } else if (this is bestLast) {
             @bestLast = null;
 
@@ -127,9 +140,9 @@ class Player {
 
         UI::TableNextRow();
 
-        UI::TableNextColumn();
-        UI::AlignTextToFramePadding();
-        UI::Text(tostring(i));
+        // UI::TableNextColumn();
+        // UI::AlignTextToFramePadding();
+        // UI::Text(tostring(i));
 
         UI::TableNextColumn();
         bool changed;
@@ -184,15 +197,22 @@ class Player {
 
         UI::TableNextColumn();
 
+        UI::BeginDisabled(inLimitedRun);
+
         UI::BeginDisabled(i == 0);
         if (UI::Button(Icons::ArrowUp)) {
             players.RemoveAt(i);
             players.InsertAt(i - 1, this);
-            if (i == index) {
-                Decrement();
-            } else if (i - 1 == index) {
-                Increment();
+
+            if (S_Mode != Mode::Limited) {
+                if (i == index) {
+                    Decrement();
+                } else if (i - 1 == index) {
+                    Increment();
+                }
             }
+
+            File::Save();
         }
         UI::EndDisabled();
         UI::SetItemTooltip("Move Up");
@@ -202,20 +222,29 @@ class Player {
         if (UI::Button(Icons::ArrowDown)) {
             players.RemoveAt(i);
             players.InsertAt(i + 1, this);
-            if (i == index) {
-                Increment();
-            } else if (i + 1 == index) {
-                Decrement();
+
+            if (S_Mode != Mode::Limited) {
+                if (i == index) {
+                    Increment();
+                } else if (i + 1 == index) {
+                    Decrement();
+                }
             }
+
+            File::Save();
         }
         UI::EndDisabled();
         UI::SetItemTooltip("Move Down");
+
+        UI::EndDisabled();
 
         UI::SameLine();
         if (UI::Button(Icons::Pencil)) {
             editingName = !editingName;
         }
         UI::SetItemTooltip("Edit Name");
+
+        UI::BeginDisabled(inLimitedRun);
 
         UI::SameLine();
         UI::BeginDisabled(times.Length == 0);
@@ -234,9 +263,21 @@ class Player {
         }
         UI::SetItemTooltip("Remove Player");
 
+        UI::EndDisabled();
+
         UI::SameLine();
         UI::BeginDisabled();
-        UI::Selectable("##select", i == index, UI::SelectableFlags::SpanAllColumns);
+        UI::Selectable(
+            "##select",
+            (true
+                and i == index
+                and (false
+                    or S_Mode != Mode::Limited
+                    or inLimitedRun
+                )
+            ),
+            UI::SelectableFlags::SpanAllColumns
+        );
         UI::EndDisabled();
 
         UI::PopID();
@@ -254,6 +295,8 @@ void AddPlayer(const string&in name, const bool fromFile = false) {
 }
 
 void ClearPlayers() {
+    trace("clearing players");
+
     index        = 0;
     players      = {};
     @bestAverage = null;
@@ -262,6 +305,8 @@ void ClearPlayers() {
 }
 
 void ClearPlayerTimes() {
+    trace("clearing all players' times");
+
     for (uint i = 0; i < players.Length; i++) {
         players[i].ClearTimes(true);
     }

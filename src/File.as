@@ -1,5 +1,5 @@
 // c 2025-09-02
-// m 2025-09-02
+// m 2025-09-03
 
 namespace File {
     const string file = IO::FromStorageFolder("data.json");
@@ -42,7 +42,7 @@ namespace File {
         }
 
         try {
-            Json::ToFile(file, json);
+            Json::ToFile(file, json, true);
         } catch {
             error("error saving file: " + getExceptionInfo());
         }
