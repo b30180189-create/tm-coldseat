@@ -1,24 +1,50 @@
 // c 2025-09-02
-// m 2025-09-03
+// m 2025-09-08
 
 enum Mode {
     Forever,
-    Limited
+    Limited,
+    Redemption
 }
 
-bool inLimitedRun = false;
-uint roundsLeft   = 0;
+bool inRun = false;
 
-void StartLimitedRun() {
-    index        = 0;
-    inLimitedRun = true;
-    roundsLeft   = S_Rounds;
+namespace Limited {
+    uint roundsLeft = 0;
 
-    ClearPlayerTimes();
+    void Start() {
+        index      = 0;
+        inRun      = true;
+        roundsLeft = S_Rounds;
+
+        ClearPlayerTimes();
+    }
+
+    void Stop() {
+        inRun = false;
+    }
 }
 
-void StopLimitedRun(const bool finished = false) {
-    ;
+namespace Redemption {
+    bool active = false;
+    uint round  = 1;
 
-    inLimitedRun = false;
+    bool InRun() {
+        return true
+            and inRun
+            and S_Mode == Mode::Redemption
+        ;
+    }
+
+    void Start() {
+        index = 0;
+        inRun = true;
+        round = 1;
+
+        ClearPlayerTimes();
+    }
+
+    void Stop() {
+        inRun = false;
+    }
 }

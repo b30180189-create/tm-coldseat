@@ -1,17 +1,20 @@
 // c 2025-09-02
-// m 2025-09-03
+// m 2025-09-13
 
 Player@      bestAverage;
 Player@      bestBest;
 Player@      bestLast;
 const string blankTime = "\u2212:\u2212\u2212.\u2212\u2212\u2212";
+const vec4   colorElim = vec4(0.7f, 0.0f, 0.0f, 1.0f);
 uint         index     = 0;
 Player@[]    players;
 
 class Player {
     uint   average     = uint(-1);
     uint   best        = uint(-1);
+    bool   dormant     = false;
     bool   editingName = false;
+    bool   eliminated  = false;
     string name;
     uint[] times;
 
@@ -19,13 +22,20 @@ class Player {
         return times.Length > 0 ? times[times.Length - 1] : uint(-1);
     }
 
+    bool get_skip() {
+        return false
+            or dormant
+            or eliminated
+        ;
+    }
+
     Player(const string&in name) {
         this.name = name;
     }
 
-    void AddTime(const int time) {
+    bool AddTime(const int time) {
         if (time <= 0) {
-            return;
+            return true;
         }
 
         times.InsertLast(uint(time));
@@ -84,6 +94,93 @@ class Player {
                 }
             }
         }
+
+        if (Redemption::InRun()) {
+            bool shouldEliminate = true;
+
+            if (true
+                and Redemption::round == 1
+                and index == 0
+            ) {
+                dormant = true;
+                return true;
+            }
+
+            for (uint i = 0; i < players.Length; i++) {
+                if (false
+                    or players[i] is this
+                    or players[i].eliminated
+                ) {
+                    continue;
+                }
+
+                if (true
+                    // and (false
+                        // or players[i].dormant
+                        // or players[i].best == uint(-1)
+                    // )
+                    and players[i].best != uint(-1)
+                    and best < players[i].best
+                ) {
+                    dormant            = true;
+                    players[i].dormant = false;
+                    shouldEliminate    = false;
+                    print("player '" + name + "' overtook player '" + players[i].name + "'");
+                }
+            }
+
+            if (true
+                and Redemption::round > 1
+                and shouldEliminate
+            ) {
+                trace("player '" + name + "' eliminated");
+                eliminated = true;
+
+                Player@ newWorst;
+                for (uint i = 0; i < players.Length; i++) {
+                    if (true
+                        and !players[i].eliminated
+                        and (false
+                            or newWorst is null
+                            or players[i].best > newWorst.best
+                        )
+                    ) {
+                        if (newWorst is null) {
+                            trace("new worst is null, setting to player '" + players[i].name + "'");
+                        } else {
+                            trace("player '" + players[i].name + "' has a worse time than player '" + newWorst.name + "'");
+                        }
+                        @newWorst = players[i];
+                    }
+                }
+                if (newWorst !is null) {
+                    newWorst.dormant = false;
+                } else {
+                    warn("didn't find new worst player");
+                }
+            }
+
+            uint elimCount = 0;
+            Player@ alive;
+
+            for (uint i = 0; i < players.Length; i++) {
+                if (players[i].eliminated) {
+                    elimCount++;
+                } else {
+                    @alive = players[i];
+                }
+            }
+
+            if (elimCount == players.Length - 1) {
+                Redemption::Stop();
+                const string msg = "Player '" + alive.name + "' is the winner!";
+                print(msg);
+                UI::ShowNotification(pluginTitle, msg, vec4(0.0f, 0.8f, 0.0f, 0.8f));
+                return false;
+            }
+        }
+
+        return true;
     }
 
     void ClearTimes(const bool clearAll = false) {
@@ -152,16 +249,14 @@ class Player {
                 editingName = false;
             }
         } else {
-            UI::AlignTextToFramePadding();
-            UI::Text(name);
+            RenderRowText(name);
         }
 
         UI::TableNextColumn();
         if (this is bestLast) {
             UI::PushFont(UI::Font::DefaultBold);
         }
-        UI::AlignTextToFramePadding();
-        UI::Text(times.Length > 0
+        RenderRowText(times.Length > 0
             ? Time::Format(last)
             : blankTime
         );
@@ -173,8 +268,7 @@ class Player {
         if (this is bestBest) {
             UI::PushFont(UI::Font::DefaultBold);
         }
-        UI::AlignTextToFramePadding();
-        UI::Text(times.Length > 0
+        RenderRowText(times.Length > 0
             ? Time::Format(best)
             : blankTime
         );
@@ -186,8 +280,7 @@ class Player {
         if (this is bestAverage) {
             UI::PushFont(UI::Font::DefaultBold);
         }
-        UI::AlignTextToFramePadding();
-        UI::Text(times.Length > 0
+        RenderRowText(times.Length > 0
             ? Time::Format(average)
             : blankTime
         );
@@ -197,7 +290,7 @@ class Player {
 
         UI::TableNextColumn();
 
-        UI::BeginDisabled(inLimitedRun);
+        UI::BeginDisabled(inRun);
 
         UI::BeginDisabled(i == 0);
         if (UI::Button(Icons::ArrowUp)) {
@@ -244,7 +337,7 @@ class Player {
         }
         UI::SetItemTooltip("Edit Name");
 
-        UI::BeginDisabled(inLimitedRun);
+        UI::BeginDisabled(inRun);
 
         UI::SameLine();
         UI::BeginDisabled(times.Length == 0);
@@ -273,7 +366,7 @@ class Player {
                 and i == index
                 and (false
                     or S_Mode != Mode::Limited
-                    or inLimitedRun
+                    or inRun
                 )
             ),
             UI::SelectableFlags::SpanAllColumns
@@ -283,6 +376,20 @@ class Player {
         UI::PopID();
 
         return good;
+    }
+
+    void RenderRowText(const string&in text) {
+        UI::AlignTextToFramePadding();
+
+        if (dormant) {
+            UI::TextDisabled(text);
+        } else if (eliminated) {
+            UI::PushStyleColor(UI::Col::Text, colorElim);
+            UI::Text(text);
+            UI::PopStyleColor();
+        } else {
+            UI::Text(text);
+        }
     }
 }
 
@@ -309,6 +416,8 @@ void ClearPlayerTimes() {
 
     for (uint i = 0; i < players.Length; i++) {
         players[i].ClearTimes(true);
+        players[i].dormant    = false;
+        players[i].eliminated = false;
     }
 
     @bestAverage = null;
@@ -324,10 +433,48 @@ void Decrement() {
     }
 }
 
-void Increment() {
+void Increment(const uint start = 0) {
+    if (start > players.Length) {
+        error("too many increments");
+        return;
+    }
+
     if (index < players.Length - 1) {
         index++;
     } else {
         index = 0;
+
+        if (Redemption::InRun()) {
+            Redemption::round++;
+        }
+    }
+
+    if (Redemption::InRun()) {
+        if (players[index].skip) {
+            Player@ last;
+            uint remaining = 0;
+
+            for (uint i = 0; i < players.Length; i++) {
+                if (!players[i].skip) {
+                    remaining++;
+                    @last = players[i];
+                }
+            }
+
+            if (false
+                or players[index].skip
+                or remaining > 1
+            ) {
+                Increment(start + 1);
+            } else {
+                if (last !is null) {
+                    trace("last player is '" + last.name + "'");
+                }
+                Redemption::Stop();
+            }
+
+        } else {
+            trace("player '" + players[index].name + "' is now active");
+        }
     }
 }

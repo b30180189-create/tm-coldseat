@@ -1,5 +1,5 @@
 // c 2025-09-02
-// m 2025-09-03
+// m 2025-09-13
 
 const string  pluginColor = "\\$8DF";
 const string  pluginIcon  = Icons::SnowflakeO;
@@ -24,9 +24,11 @@ void Main() {
 
         if (lastMode != S_Mode) {
             lastMode = S_Mode;
-            if (lastMode == Mode::Limited) {
-                ClearPlayerTimes();
-                index = 0;
+            switch (S_Mode) {
+                case Mode::Limited:
+                case Mode::Redemption:
+                    ClearPlayerTimes();
+                    index = 0;
             }
         }
 
@@ -47,8 +49,9 @@ void Main() {
                 // print("exit map");
                 ClearPlayerTimes();
 
-                if (inLimitedRun) {
-                    StopLimitedRun();
+                if (inRun) {
+                    Limited::Stop();
+                    Redemption::Stop();
                 }
             }
         }
@@ -109,30 +112,60 @@ void OnFinishedRun(const int time) {
     if (false
         or time <= 0
         or players.Length == 0
-        or (true
-            and S_Mode == Mode::Limited
-            and !inLimitedRun
-        )
     ) {
         return;
     }
 
-    if (inLimitedRun) {
-        if (index == players.Length - 1) {
-            roundsLeft--;
+    if (inRun) {
+        if (S_Mode == Mode::Limited) {
+            if (index == players.Length - 1) {
+                Limited::roundsLeft--;
+            }
+
+            if (Limited::roundsLeft == 0) {
+                Limited::Stop();
+            }
+
+        } else {
+            if (!Redemption::active) {
+                ;
+            }
         }
 
-        if (roundsLeft == 0) {
-            StopLimitedRun(true);
+    } else {
+        if (false
+            or S_Mode == Mode::Limited
+            or S_Mode == Mode::Redemption
+        ) {
+            return;
         }
     }
 
-    players[index].AddTime(time);
-    Increment();
+    if (players[index].AddTime(time)) {
+        Increment();
+    }
 }
 
 void RenderWindow() {
     const float scale = UI::GetScale();
+
+    UI::BeginDisabled(inRun);
+    if (UI::BeginCombo("Mode", tostring(S_Mode), UI::ComboFlags::HeightLargest)) {
+        for (int i = 0; i < 3; i++) {
+            Mode mode = Mode(i);
+            if (UI::Selectable(tostring(mode), S_Mode == mode)) {
+                S_Mode = mode;
+            }
+        }
+
+        UI::EndCombo();
+    }
+    UI::EndDisabled();
+
+    UI::SameLine();
+    UI::AlignTextToFramePadding();
+    UI::TextDisabled(Icons::QuestionCircle);
+    UI::SetItemTooltip("Switching to 'Limited' or 'Redemption' mode clears all players' times");
 
     switch (S_Mode) {
         case Mode::Forever:
@@ -152,10 +185,10 @@ void RenderWindow() {
             break;
 
         case Mode::Limited:
-            if (!inLimitedRun) {
+            if (!inRun) {
                 UI::BeginDisabled(!InMap());
                 if (UI::Button(Icons::Play + " Start Run")) {
-                    StartLimitedRun();
+                    Limited::Start();
                 }
                 UI::EndDisabled();
 
@@ -165,11 +198,30 @@ void RenderWindow() {
 
             } else {
                 if (UI::Button(Icons::Stop + " End Run")) {
-                    StopLimitedRun();
+                    Limited::Stop();
                 }
 
                 UI::SameLine();
-                UI::TextDisabled("(" + roundsLeft + " Round" + (roundsLeft == 1 ? "" : "s") + " Left)");
+                UI::TextDisabled("(" + Limited::roundsLeft + " Round" + (Limited::roundsLeft == 1 ? "" : "s") + " Left)");
+            }
+
+            break;
+
+        case Mode::Redemption:
+            if (!inRun) {
+                UI::BeginDisabled(!InMap());
+                if (UI::Button(Icons::Play + " Start Run")) {
+                    Redemption::Start();
+                }
+                UI::EndDisabled();
+
+            } else {
+                if (UI::Button(Icons::Stop + " End Run")) {
+                    Redemption::Stop();
+                }
+
+                UI::SameLine();
+                UI::TextDisabled("(Round " + Redemption::round + ")");
             }
 
             break;
@@ -220,7 +272,7 @@ void RenderWindow() {
 
     UI::SeparatorText("Add New Player");
 
-    UI::BeginDisabled(inLimitedRun);
+    UI::BeginDisabled(inRun);
 
     UI::SetNextItemWidth((UI::GetContentRegionAvail().x - 15.0f) / scale - scale * 25.0f);
     bool changed;
