@@ -1,7 +1,7 @@
 ![Signed](https://img.shields.io/badge/Signed-No-FF3333)
 ![Game Trackmania](https://img.shields.io/badge/Game-Trackmania-blue)
 
-# ColdSeat
+# Coldseat
 
 A plugin to track your recent runs on a map in separate categories.
 
