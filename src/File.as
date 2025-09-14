@@ -1,5 +1,5 @@
 // c 2025-09-02
-// m 2025-09-03
+// m 2025-09-13
 
 namespace File {
     const string file = IO::FromStorageFolder("data.json");
@@ -41,10 +41,13 @@ namespace File {
             json.Add(players[i].name);
         }
 
-        try {
+        startnew(SaveAsync, json);
+    }
+
+    void SaveAsync(ref@ j) {
+        auto json = cast<Json::Value>(j);
+        if (json !is null) {
             Json::ToFile(file, json, true);
-        } catch {
-            error("error saving file: " + getExceptionInfo());
         }
     }
 }
