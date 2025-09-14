@@ -115,10 +115,6 @@ class Player {
                 }
 
                 if (true
-                    // and (false
-                        // or players[i].dormant
-                        // or players[i].best == uint(-1)
-                    // )
                     and players[i].best != uint(-1)
                     and best < players[i].best
                 ) {

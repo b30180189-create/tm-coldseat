@@ -6,7 +6,6 @@ const string  pluginIcon  = Icons::SnowflakeO;
 Meta::Plugin@ pluginMeta  = Meta::ExecutingPlugin();
 const string  pluginTitle = pluginColor + pluginIcon + "\\$G " + pluginMeta.Name;
 
-string     newName;
 const vec4 rowBgColor = vec4(vec3(), 0.5f);
 
 void Main() {
@@ -105,39 +104,6 @@ void Render() {
 void RenderMenu() {
     if (UI::MenuItem(pluginTitle, "", S_Enabled)) {
         S_Enabled = !S_Enabled;
-    }
-}
-
-void OnFinishedRun(const int time) {
-    if (false
-        or time <= 0
-        or players.Length == 0
-    ) {
-        return;
-    }
-
-    if (inRun) {
-        if (S_Mode == Mode::Limited) {
-            if (index == players.Length - 1) {
-                Limited::roundsLeft--;
-            }
-
-            if (Limited::roundsLeft == 0) {
-                Limited::Stop();
-            }
-        }
-
-    } else {
-        if (false
-            or S_Mode == Mode::Limited
-            or S_Mode == Mode::Redemption
-        ) {
-            return;
-        }
-    }
-
-    if (players[index].AddTime(time)) {
-        Increment();
     }
 }
 
