@@ -95,6 +95,8 @@ void Render() {
         return;
     }
 
+    RenderDisclaimer();
+
     if (UI::Begin(pluginTitle + "###main-" + pluginMeta.ID, S_Enabled, UI::WindowFlags::None)) {
         RenderWindow();
     }
@@ -107,7 +109,69 @@ void RenderMenu() {
     }
 }
 
+void RenderDisclaimer() {
+    if (true
+        and S_DisclaimerShown
+        and !S_Disclaimer
+    ) {
+        return;
+    }
+
+    const string id = pluginTitle + " Disclaimer";
+    const int flags = 0
+        | UI::WindowFlags::NoMove
+        | UI::WindowFlags::NoResize
+        | UI::WindowFlags::NoSavedSettings
+    ;
+
+    const int2 size = int2(500, 360);
+    UI::SetNextWindowSize(size.x, size.y);
+    const float scale = UI::GetScale();
+    UI::SetNextWindowPos(int(Draw::GetWidth() / scale - size.x) / 2, int(Draw::GetHeight() / scale - size.y) / 2);
+
+    UI::OpenPopup(id);
+
+    bool open;
+
+    if (UI::BeginPopupModal(id, open, flags)) {
+        UI::Markdown(
+            "Coldseat is similar to the standard hotseat mode, but playable anywhere and comes with a few different "
+            "modes of its own. Its purpose is to let you track recent runs on a map in different \"categories.\" What "
+            "this means is up to you - maybe you like to try different strategies one after the other, maybe you have "
+            "multiple personalities or fursonas, or maybe you just like to imagine you have in-person friends to play "
+            "with when you don't. I'm not here to judge - I'm just here to turn calories into lines of code."
+        );
+
+        UI::NewLine();
+
+        UI::PushStyleColor(UI::Col::Text, vec4(1.0f, 0.8f, 0.1f, 1.0f));
+        UI::Markdown(
+            "This plugin is for your own **personal** use only - it is against the game's terms of service to share "
+            "your account with someone else. By using this plugin, you understand that you as an **individual human** "
+            "are the only one doing so on your account. If you have other poeple you'd like to play with, you should "
+            "use the hotseat mode provided by the game or the \"Better Hotseat\" plugin."
+        );
+        UI::PopStyleColor();
+
+        UI::NewLine();
+
+        UI::Markdown("You may show this window again at any time from the settings.");
+
+        UI::EndPopup();
+    }
+
+    if (!open) {
+        UI::CloseCurrentPopup();
+        S_Disclaimer = false;
+        S_DisclaimerShown = true;
+    }
+}
+
 void RenderWindow() {
+    if (!S_DisclaimerShown) {
+        S_Disclaimer = true;
+    }
+
     const float scale = UI::GetScale();
 
     UI::BeginDisabled(inRun);
