@@ -1,5 +1,5 @@
 // c 2025-09-02
-// m 2025-09-08
+// m 2025-09-13
 
 enum Mode {
     Forever,
@@ -26,7 +26,6 @@ namespace Limited {
 }
 
 namespace Redemption {
-    bool active = false;
     uint round  = 1;
 
     bool InRun() {

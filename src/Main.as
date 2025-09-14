@@ -125,11 +125,6 @@ void OnFinishedRun(const int time) {
             if (Limited::roundsLeft == 0) {
                 Limited::Stop();
             }
-
-        } else {
-            if (!Redemption::active) {
-                ;
-            }
         }
 
     } else {
@@ -227,13 +222,10 @@ void RenderWindow() {
             break;
     }
 
-    UI::BeginChild("##child-table-players", UI::GetContentRegionAvail() - vec2(0.0f, scale * 60.0f));
-
     if (UI::BeginTable("##table-players", 5, UI::TableFlags::RowBg | UI::TableFlags::ScrollY)) {
         UI::PushStyleColor(UI::Col::TableRowBgAlt, rowBgColor);
 
         UI::TableSetupScrollFreeze(0, 1);
-        // UI::TableSetupColumn("#",       UI::TableColumnFlags::WidthFixed, scale * 30.0f);
         UI::TableSetupColumn("name");
         UI::TableSetupColumn("last",    UI::TableColumnFlags::WidthFixed, scale * 80.0f);
         UI::TableSetupColumn("best",    UI::TableColumnFlags::WidthFixed, scale * 80.0f);
@@ -264,30 +256,15 @@ void RenderWindow() {
             }
         }
 
+        UI::TableNextRow();
+        UI::TableNextColumn();
+        UI::BeginDisabled(inRun);
+        if (UI::Button(Icons::Plus)) {
+            AddPlayer("p" + (players.Length + 1));
+        }
+        UI::EndDisabled();
+
         UI::PopStyleColor();
         UI::EndTable();
     }
-
-    UI::EndChild();
-
-    UI::SeparatorText("Add New Player");
-
-    UI::BeginDisabled(inRun);
-
-    UI::SetNextItemWidth((UI::GetContentRegionAvail().x - 15.0f) / scale - scale * 25.0f);
-    bool changed;
-    newName = UI::InputText("##new", newName, changed, UI::InputTextFlags::EnterReturnsTrue);
-
-    UI::SameLine();
-    UI::BeginDisabled(newName.Length == 0);
-    if (false
-        or UI::Button(Icons::Plus)
-        or changed
-    ) {
-        AddPlayer(newName);
-        newName = "";
-    }
-    UI::EndDisabled();
-
-    UI::EndDisabled();
 }
