@@ -9,6 +9,8 @@ NOTE: It is against the game's terms of service to account share. This plugin is
 
 Some logic has been borrowed from [Run History](https://openplanet.dev/plugin/runhistory).
 
+This plugin was commissioned.
+
 <!-- ![Signed](https://img.shields.io/badge/Signed-Yes-00AA00) -->
 <!-- ![Signed](https://img.shields.io/badge/Signed-School_Mode-CC1199) -->
 <!-- ![Number of downloads](https://img.shields.io/badge/dynamic/json?query=downloads&url=https%3A%2F%2Fopenplanet.dev%2Fapi%2Fplugin%2F766&label=Downloads&color=purple) -->
