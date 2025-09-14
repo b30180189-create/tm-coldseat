@@ -26,7 +26,7 @@ namespace Limited {
 }
 
 namespace Redemption {
-    uint round  = 1;
+    uint round = 1;
 
     bool InRun() {
         return true
