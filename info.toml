@@ -3,6 +3,7 @@ name = "Coldseat"
 author = "Ezio"
 category = "Developer"
 version = "0.1.0"
+siteid = 766
 
 [script]
 dependencies = [ "MLFeedRaceData" ]
