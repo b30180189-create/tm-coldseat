@@ -6,4 +6,3 @@ version = "0.1.0"
 
 [script]
 dependencies = [ "MLFeedRaceData" ]
-optional_dependencies = [ "ChampionMedals", "WarriorMedals" ]
