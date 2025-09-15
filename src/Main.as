@@ -1,5 +1,5 @@
 // c 2025-09-02
-// m 2025-09-13
+// m 2025-09-15
 
 const string  pluginColor = "\\$8DF";
 const string  pluginIcon  = Icons::SnowflakeO;
@@ -257,9 +257,9 @@ void RenderWindow() {
 
         UI::TableSetupScrollFreeze(0, 1);
         UI::TableSetupColumn("name");
-        UI::TableSetupColumn("last",    UI::TableColumnFlags::WidthFixed, scale * 80.0f);
-        UI::TableSetupColumn("best",    UI::TableColumnFlags::WidthFixed, scale * 80.0f);
-        UI::TableSetupColumn("average", UI::TableColumnFlags::WidthFixed, scale * 80.0f);
+        UI::TableSetupColumn("last",    UI::TableColumnFlags::WidthFixed, scale * (S_MedalIcons ? 98.0f : 80.0f));
+        UI::TableSetupColumn("best",    UI::TableColumnFlags::WidthFixed, scale * (S_MedalIcons ? 98.0f : 80.0f));
+        UI::TableSetupColumn("average", UI::TableColumnFlags::WidthFixed, scale * (S_MedalIcons ? 98.0f : 80.0f));
         UI::TableSetupColumn("actions", UI::TableColumnFlags::WidthFixed, scale * 200.0f);
         UI::TableHeadersRow();
 

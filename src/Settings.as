@@ -1,5 +1,5 @@
 // c 2025-09-02
-// m 2025-09-13
+// m 2025-09-15
 
 [Setting category="General" name="Enabled"]
 bool S_Enabled = true;
@@ -16,6 +16,9 @@ Mode S_Mode = Mode::Forever;
 
 [Setting category="General" name="Rounds" if="S_Mode Limited"]
 uint S_Rounds= 3;
+
+[Setting category="General" name="Show medal icons"]
+bool S_MedalIcons = true;
 
 [Setting category="General" name="Show disclaimer"]
 bool S_Disclaimer = false;

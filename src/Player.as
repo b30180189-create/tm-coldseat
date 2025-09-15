@@ -1,5 +1,5 @@
 // c 2025-09-02
-// m 2025-09-13
+// m 2025-09-15
 
 Player@      bestAverage;
 Player@      bestBest;
@@ -253,8 +253,8 @@ class Player {
             UI::PushFont(UI::Font::DefaultBold);
         }
         RenderRowText(times.Length > 0
-            ? Time::Format(last)
-            : blankTime
+            ? GetMedalIcon(last) + "\\$G " + Time::Format(last)
+            : GetMedalIcon(0) + "\\$G " + blankTime
         );
         if (this is bestLast) {
             UI::PopFont();
@@ -265,8 +265,8 @@ class Player {
             UI::PushFont(UI::Font::DefaultBold);
         }
         RenderRowText(times.Length > 0
-            ? Time::Format(best)
-            : blankTime
+            ? GetMedalIcon(best) + "\\$G " + Time::Format(best)
+            : GetMedalIcon(0) + "\\$G " + blankTime
         );
         if (this is bestBest) {
             UI::PopFont();
@@ -277,8 +277,8 @@ class Player {
             UI::PushFont(UI::Font::DefaultBold);
         }
         RenderRowText(times.Length > 0
-            ? Time::Format(average)
-            : blankTime
+            ? GetMedalIcon(average) + "\\$G " + Time::Format(average)
+            : GetMedalIcon(0) + "\\$G " + blankTime
         );
         if (this is bestAverage) {
             UI::PopFont();

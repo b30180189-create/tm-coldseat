@@ -7,3 +7,4 @@ siteid = 766
 
 [script]
 dependencies = [ "MLFeedRaceData" ]
+optional_dependencies = [ "ChampionMedals", "WarriorMedals" ]
