@@ -1,6 +1,3 @@
-// c 2025-09-02
-// m 2025-09-13
-
 enum Mode {
     Forever,
     Limited,

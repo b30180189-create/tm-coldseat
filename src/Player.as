@@ -1,6 +1,3 @@
-// c 2025-09-02
-// m 2025-09-15
-
 Player@      bestAverage;
 Player@      bestBest;
 Player@      bestLast;

@@ -1,6 +1,3 @@
-// c 2025-09-02
-// m 2025-09-15
-
 const vec3 colorChampion = vec3(1.0f,   0.267f, 0.467f);
 const vec3 colorAuthor   = vec3(0.0f,   0.471f, 0.035f);
 const vec3 colorGold     = vec3(0.871f, 0.737f, 0.259f);

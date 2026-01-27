@@ -1,6 +1,3 @@
-// c 2025-09-02
-// m 2025-09-15
-
 const string  pluginColor = "\\$8DF";
 const string  pluginIcon  = Icons::SnowflakeO;
 Meta::Plugin@ pluginMeta  = Meta::ExecutingPlugin();
