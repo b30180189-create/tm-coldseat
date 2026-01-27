@@ -124,7 +124,7 @@ void RenderDisclaimer() {
     const int2 size = int2(500, 360);
     UI::SetNextWindowSize(size.x, size.y);
     const float scale = UI::GetScale();
-    UI::SetNextWindowPos(int(Draw::GetWidth() / scale - size.x) / 2, int(Draw::GetHeight() / scale - size.y) / 2);
+    UI::SetNextWindowPos(int(Display::GetWidth() / scale - size.x) / 2, int(Display::GetHeight() / scale - size.y) / 2);
 
     UI::OpenPopup(id);
 
