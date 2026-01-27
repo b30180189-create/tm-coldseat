@@ -2,7 +2,7 @@
 name = "Coldseat"
 author = "Ezio"
 category = "Race"
-version = "0.1.1"
+version = "0.2.0"
 siteid = 766
 
 [script]
