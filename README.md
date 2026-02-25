@@ -1,16 +1,10 @@
-![](https://img.shields.io/badge/Signed-Yes-00AA00)
-![Number of downloads](https://img.shields.io/badge/dynamic/json?query=downloads&url=https%3A%2F%2Fopenplanet.dev%2Fapi%2Fplugin%2F766&label=Downloads&color=purple)
-![Version](https://img.shields.io/badge/dynamic/json?query=version&url=https%3A%2F%2Fopenplanet.dev%2Fapi%2Fplugin%2F766&label=Version&color=red)
-![](https://img.shields.io/badge/Game-TM-blue)
 
-# Coldseat
 
-A plugin to track your recent runs on a map in separate categories.
+# Attempt based Hotseat
+
+
 
 NOTE: It is against the game's terms of service to account share. This plugin is only for your own personal use. If you wish to play with friends, use the official Hotseat game mode.
 
-Some logic has been borrowed from [Run History](https://openplanet.dev/plugin/runhistory).
+Some logic has been borrowed from [coldseat](https://openplanet.dev/plugin/coldseat).
 
-This plugin was commissioned.
-
-![image](images/coldseat.png)
