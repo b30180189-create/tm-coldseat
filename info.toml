@@ -1,10 +1,9 @@
 [meta]
-name = "Coldseat"
-author = "Ezio"
+name = "Hotseat with lives"
+author = "eoggg2022"
 category = "Race"
-version = "0.2.0"
+version = "0.0.1"
 siteid = 766
 
 [script]
 dependencies = [ "MLFeedRaceData" ]
-optional_dependencies = [ "ChampionMedals", "WarriorMedals" ]
